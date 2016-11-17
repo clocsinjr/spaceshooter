@@ -3,7 +3,8 @@ import pygame
 pygame.mixer.pre_init(44100, -16, 1, 4096)
 pygame.mixer.init()
 
-bgmusic = pygame.mixer.music.load("bgmusic3.mp3")
+src = "audio/"
+bgmusic = pygame.mixer.music.load(src + "bgmusic3.mp3")
 pygame.mixer.music.set_volume(0.7)
 pygame.mixer.music.play(-1)
 
@@ -15,9 +16,9 @@ pickups = pygame.mixer.Channel(4)
 fireChannel.set_volume(0.5)
 hitMarker.set_volume(0.5)
 
-playerFireSound = pygame.mixer.Sound("playerFireSound.ogg")
-hitEnemySound = pygame.mixer.Sound("hitEnemySound.ogg")
-killEnemySound = pygame.mixer.Sound("killEnemySound.ogg")
-hitPlayerSound = pygame.mixer.Sound("hitPlayerSound.ogg")
-pickupBuff = pygame.mixer.Sound("pickupBuff.ogg")
-pickupWeap = pygame.mixer.Sound("pickupWeap.ogg")
+playerFireSound = pygame.mixer.Sound(src + "playerFireSound.ogg")
+hitEnemySound = pygame.mixer.Sound(src + "hitEnemySound.ogg")
+killEnemySound = pygame.mixer.Sound(src + "killEnemySound.ogg")
+hitPlayerSound = pygame.mixer.Sound(src + "hitPlayerSound.ogg")
+pickupBuff = pygame.mixer.Sound(src + "pickupBuff.ogg")
+pickupWeap = pygame.mixer.Sound(src + "pickupWeap.ogg")

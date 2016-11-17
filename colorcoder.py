@@ -338,7 +338,7 @@ if __name__ == '__main__':
 			
 			if (player.score / 500.0) >= diffcount:
 				diffcount += 1
-				difficulty *= 1.1
+				difficulty *= 1.2
 		
 			
 			# --- Drawing code should go here
