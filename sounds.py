@@ -4,7 +4,8 @@ pygame.mixer.pre_init(44100, -16, 1, 4096)
 pygame.mixer.init()
 
 src = "audio/"
-bgmusic = pygame.mixer.music.load(src + "bgmusic3.mp3")
+bgmusic = pygame.mixer.music.load(src + "bgmusic2.wav")
+#bgmusic = pygame.mixer.music.load(src + "bgmusic3.mp3")
 pygame.mixer.music.set_volume(0.7)
 pygame.mixer.music.play(-1)
 
