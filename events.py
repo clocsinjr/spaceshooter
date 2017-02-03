@@ -64,8 +64,7 @@ def addEventFodderwall(size):
     x = random.uniform(entity.RGRUNT + 32 * width,
                        size[0] - (entity.RGRUNT + 32 * width))
 
-    print x
-    thisEvent = [x + 32 * i for i in range(-2, 2, 1)]
+    thisEvent = [x + 32 * i for i in range(-width + 1, width, 1)]
     enemySpawn[EVENT_FODDER].append(thisEvent)
 
 
@@ -91,7 +90,7 @@ def addEvents(size, difficulty):
     tenth = (1.0 / 100.0)
 
     # add enemy events
-    if random.random() < 100 * difficulty:
+    if random.random() < fiftheenth * difficulty:
         type = random.randint(11, 15)
         if len(enemySpawn[EVENT_SINE]) == 0 and type <= 6:
             addEventSinewave(size)
@@ -101,25 +100,25 @@ def addEvents(size, difficulty):
             addEventFodderwall(size)
 
     # add randomly placed fodders and grunts
-    # timesFodder = timesGrunt = 0
-    # for i in range(16):
-    #     if random.random() < twelveth * difficulty:
-    #         timesFodder += 1
-    #     if random.random() < twentieth * difficulty:
-    #         timesGrunt += 1
-    # for j in range(0, timesFodder):
-    #     addEventFodder(size)
-    # for j in range(0, timesFodder):
-    #     addEventGrunt(size)
+    timesFodder = timesGrunt = 0
+    for i in range(16):
+        if random.random() < twelveth * difficulty:
+            timesFodder += 1
+        if random.random() < twentieth * difficulty:
+            timesGrunt += 1
+    for j in range(0, timesFodder):
+        addEventFodder(size)
+    for j in range(0, timesFodder):
+        addEventGrunt(size)
 
-    # # add randomly placed sentries
-    # if random.random() < fiftheenth * difficulty:
-    #     addEventSentry(size)
+    # add randomly placed sentries
+    if random.random() < fiftheenth * difficulty:
+        addEventSentry(size)
 
-    # # add randomly placed scopes, ASes and HPups
-    # if random.random() < fiftheenth:
-    #     addEventScope(size)
-    # if random.random() < fiftheenth:
-    #     addEventAS(size)
-    # if random.random() < fiftheenth * difficulty:
-    #     addEventHPup(size)
+    # add randomly placed scopes, ASes and HPups
+    if random.random() < fiftheenth:
+        addEventScope(size)
+    if random.random() < fiftheenth:
+        addEventAS(size)
+    if random.random() < fiftheenth * difficulty:
+        addEventHPup(size)
