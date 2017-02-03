@@ -17,6 +17,11 @@ enemySpawn = {EVENT_FODDER: [], EVENT_SINE: [],
               EVENT_GRUNT: [], EVENT_SENTRY: []}
 buffSpawn = {EVENT_HPUP: [], EVENT_SCOPE: [], EVENT_AS: []}
 
+twentieth = (1.0 / 200.0)
+fiftheenth = (1.0 / 150.0)
+twelveth = (1.0 / 120.0)
+tenth = (1.0 / 100.0)
+
 
 def addEventFodder(size):
     x = random.randint(entity.RFODDER, size[0] - entity.RFODDER)
@@ -84,10 +89,6 @@ def addEventAS(size):
 
 
 def addEvents(size, difficulty):
-    twentieth = (1.0 / 200.0)
-    fiftheenth = (1.0 / 150.0)
-    twelveth = (1.0 / 120.0)
-    tenth = (1.0 / 100.0)
 
     # add enemy events
     if random.random() < fiftheenth * difficulty:
