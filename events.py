@@ -28,6 +28,11 @@ def addEventSentry(size):
     enemySpawn[EVENT_SENTRY].append([x])
 
 
+def addEventGrunt(size):
+    x = random.randint(entity.RFODDER, size[0] - entity.RFODDER)
+    enemySpawn[EVENT_GRUNT].append([x])
+
+
 def addEventSinewave(size):
     # choose an originx that will fit the whole sine wave
     x = random.randint(entity.RSINE + entity.SINEAMP,
@@ -38,11 +43,6 @@ def addEventSinewave(size):
         thisEvent.append([x])
 
     enemySpawn[EVENT_SINE].extend(thisEvent)
-
-
-def addEventGrunt(size):
-    x = random.randint(entity.RFODDER, size[0] - entity.RFODDER)
-    enemySpawn[EVENT_GRUNT].append([x])
 
 
 def addEventVgrunts(size):
@@ -57,6 +57,16 @@ def addEventVgrunts(size):
     thisEvent.append([x])
 
     enemySpawn[EVENT_GRUNT].extend(thisEvent)
+
+
+def addEventFodderwall(size):
+    width = 1 + random.randint(1, 3)
+    x = random.uniform(entity.RGRUNT + 32 * width,
+                       size[0] - (entity.RGRUNT + 32 * width))
+
+    print x
+    thisEvent = [x + 32 * i for i in range(-2, 2, 1)]
+    enemySpawn[EVENT_FODDER].append(thisEvent)
 
 
 def addEventHPup(size):
@@ -81,33 +91,35 @@ def addEvents(size, difficulty):
     tenth = (1.0 / 100.0)
 
     # add enemy events
-    if random.random() < fiftheenth * difficulty:
-        type = random.randint(1, 10)
+    if random.random() < 100 * difficulty:
+        type = random.randint(11, 15)
         if len(enemySpawn[EVENT_SINE]) == 0 and type <= 6:
             addEventSinewave(size)
-        elif len(enemySpawn[EVENT_GRUNT]) == 0 and type > 6:
+        elif len(enemySpawn[EVENT_GRUNT]) == 0 and type > 6 and type < 11:
             addEventVgrunts(size)
+        elif len(enemySpawn[EVENT_FODDER]) == 0 and type >= 11:
+            addEventFodderwall(size)
 
     # add randomly placed fodders and grunts
-    timesFodder = timesGrunt = 0
-    for i in range(16):
-        if random.random() < twelveth * difficulty:
-            timesFodder += 1
-        if random.random() < twentieth * difficulty:
-            timesGrunt += 1
-    for j in range(0, timesFodder):
-        addEventFodder(size)
-    for j in range(0, timesFodder):
-        addEventGrunt(size)
+    # timesFodder = timesGrunt = 0
+    # for i in range(16):
+    #     if random.random() < twelveth * difficulty:
+    #         timesFodder += 1
+    #     if random.random() < twentieth * difficulty:
+    #         timesGrunt += 1
+    # for j in range(0, timesFodder):
+    #     addEventFodder(size)
+    # for j in range(0, timesFodder):
+    #     addEventGrunt(size)
 
-    # add randomly placed sentries
-    if random.random() < fiftheenth * difficulty:
-        addEventSentry(size)
+    # # add randomly placed sentries
+    # if random.random() < fiftheenth * difficulty:
+    #     addEventSentry(size)
 
-    # add randomly placed scopes, ASes and HPups
-    if random.random() < fiftheenth:
-        addEventScope(size)
-    if random.random() < fiftheenth:
-        addEventAS(size)
-    if random.random() < fiftheenth * difficulty:
-        addEventHPup(size)
+    # # add randomly placed scopes, ASes and HPups
+    # if random.random() < fiftheenth:
+    #     addEventScope(size)
+    # if random.random() < fiftheenth:
+    #     addEventAS(size)
+    # if random.random() < fiftheenth * difficulty:
+    #     addEventHPup(size)
