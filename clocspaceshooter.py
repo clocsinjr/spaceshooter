@@ -310,6 +310,8 @@ if __name__ == '__main__':
                 menu_key = event.key
                 if event.key == pygame.K_ESCAPE:
                     pygame.event.clear(pygame.KEYUP)
+                    if not paused:
+                        pause_selected = 0
                     paused = not paused
         # in-game
         if paused != True:
@@ -334,7 +336,7 @@ if __name__ == '__main__':
             screen.fill(131094)
 
             drawEntities()
-            gui.drawgui(player, difficulty)
+
 
             # --- tick timers
 
@@ -348,10 +350,10 @@ if __name__ == '__main__':
                 done = True
             elif  r_pause['pause'] != None:
                 paused = not paused
-            gui.draw_pausescreen(pause_selected)
 
         """ === end else ========================================================== """
-
+        
+        gui.drawgui(paused, pause_selected, player, difficulty)
         # flip screen
         pygame.display.flip()
 
@@ -359,7 +361,7 @@ if __name__ == '__main__':
         clock.tick(FPS)
 
     # Close the window and quit.
-    sounds.hitMarker.play(sounds.hitEnemySound)
+    sounds.hitMarker.play(sounds.killEnemySound)
     pygame.mixer.music.stop()
     pytime.sleep(1)
     pygame.quit()
