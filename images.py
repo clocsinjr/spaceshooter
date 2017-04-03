@@ -1,14 +1,21 @@
 import pygame
 
-playerMoveNone = pygame.image.load("images/playerNone.png")
-playerMoveLeft = pygame.image.load("images/playerLeft.png")
-playerMoveRight = pygame.image.load("images/playerRight.png")
+src = "images/"
 
-fodder = pygame.image.load("images/fodder.png")
-grunt = pygame.image.load("images/grunt.png")
-sine = pygame.image.load("images/sine.png")
-sentry = pygame.image.load("images/sentry.png")
+button_continue = pygame.image.load(src + "button_continue.png")
+button_continue_sel = pygame.image.load(src + "button_continue_sel.png")
+button_exit = pygame.image.load(src + "button_exit.png")
+button_exit_sel = pygame.image.load(src + "button_exit_sel.png")
 
-hpup = pygame.image.load("images/hpup.png")
-scope = pygame.image.load("images/scope.png")
-AS = pygame.image.load("images/AS.png")
+playerMoveNone = pygame.image.load(src + "playerNone.png")
+playerMoveLeft = pygame.image.load(src + "playerLeft.png")
+playerMoveRight = pygame.image.load(src + "playerRight.png")
+
+fodder = pygame.image.load(src + "fodder.png")
+grunt = pygame.image.load(src + "grunt.png")
+sine = pygame.image.load(src + "sine.png")
+sentry = pygame.image.load(src + "sentry.png")
+
+hpup = pygame.image.load(src + "hpup.png")
+scope = pygame.image.load(src + "scope.png")
+AS = pygame.image.load(src + "AS.png")

@@ -11,6 +11,7 @@
 
 import math
 import random
+import time as pytime
 import pygame
 
 import entity
@@ -29,7 +30,7 @@ CYAN = 52223
 pygame.init()
 
 # Set the width and height of the screen [width, height]
-size = (int(600 * 0.8), int(920 * 0.8))
+size = (int(600 * 1.0), int(920 * 1.0))
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Cloc's Spacex")
 
@@ -60,6 +61,8 @@ time = 0
 difficulty = 1.4
 diffcount = 1
 
+pause_selected = 0
+mainmenu_selected = 0
 
 def drawEntities():
     # draw player
@@ -215,7 +218,7 @@ def checkCollisions():
         player.kill()
 
 
-def updatePlayer():
+def updatePlayer(keys):
     # check pressed keys
     left = keys[pygame.K_LEFT]
     right = keys[pygame.K_RIGHT]
@@ -297,22 +300,22 @@ if __name__ == '__main__':
 
         # general input:
         keys = pygame.key.get_pressed()
-
+        menu_key = None
         # --- Main event loop
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
 
             if event.type == pygame.KEYUP:
+                menu_key = event.key
                 if event.key == pygame.K_ESCAPE:
                     pygame.event.clear(pygame.KEYUP)
                     paused = not paused
-
         # in-game
         if paused != True:
             # --- Game logic should go here
             if player.alive:
-                updatePlayer()
+                updatePlayer(keys)
             updateEnemies()
             updatePickups()
             updateProjectiles()
@@ -331,13 +334,21 @@ if __name__ == '__main__':
             screen.fill(131094)
 
             drawEntities()
-            gui.drawgui()
+            gui.drawgui(player, difficulty)
 
             # --- tick timers
 
         # when paused:
         else:
-            pass
+            r_pause = gui.handle_pausemenu(menu_key, pause_selected)
+            
+            if r_pause['selected'] != None:
+                pause_selected = r_pause['selected']
+            elif r_pause['done'] != None:
+                done = True
+            elif  r_pause['pause'] != None:
+                paused = not paused
+            gui.draw_pausescreen(pause_selected)
 
         """ === end else ========================================================== """
 
@@ -348,4 +359,7 @@ if __name__ == '__main__':
         clock.tick(FPS)
 
     # Close the window and quit.
+    sounds.hitMarker.play(sounds.hitEnemySound)
+    pygame.mixer.music.stop()
+    pytime.sleep(1)
     pygame.quit()
