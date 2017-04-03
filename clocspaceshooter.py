@@ -56,10 +56,6 @@ enemies = pygame.sprite.Group()
 player = entity.player(size)
 player.add(playerGroup)
 
-
-
-
-
 time = 0
 difficulty = 1.4
 diffcount = 1

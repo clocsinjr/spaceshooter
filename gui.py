@@ -22,16 +22,7 @@ hpbarymax = size[1] - 50
 hpbarymin = hpbarymax - 30
 hpbarlen = hpbarxmax - hpbarxmin
 
-def drawgui():
-    scoretxt = scorefont.render("Score: " + str(player.score), False, WHITE)
-    screen.blit(scoretxt, (scorex, scorey))
-
-    hptxt = scorefont.render("HP: " + str(player.HP) + "/ 100", False, WHITE)
-    screen.blit(hptxt, (hpx, hpy))
-
-    difftext = scorefont.render("Difficulty: " + str(difficulty), False, WHITE)
-    screen.blit(difftext, (diffx, diffy))
-
+def draw_hpbar():
     hpbarlim = hpbarlen * (player.HP / 100.0) + 1
     hpbarlim2 = hpbarlen * ((100 - player.HP) / 100.0)
 
@@ -41,3 +32,17 @@ def drawgui():
     if player.HP < 100.0:
         pygame.draw.rect(
             screen, RED, [hpbarlim + hpbarxmin, hpbarymin, hpbarlim2, 30])
+			
+def drawgui():
+    scoretxt = scorefont.render("Score: " + str(player.score), False, WHITE)
+    screen.blit(scoretxt, (scorex, scorey))
+
+    hptxt = scorefont.render("HP: " + str(player.HP) + "/ 100", False, WHITE)
+    screen.blit(hptxt, (hpx, hpy))
+
+    difftext = scorefont.render("Difficulty: " + str(difficulty), False, WHITE)
+    screen.blit(difftext, (diffx, diffy))
+	
+    draw_hpbar()
+
+    
