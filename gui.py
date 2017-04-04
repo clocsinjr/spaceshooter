@@ -1,11 +1,14 @@
 import pygame
 import images
-from clocspaceshooter import size, screen, done
+from clocspaceshooter import size, screen, done, paused
 from clocspaceshooter import WHITE, RED, GREEN, BLACK
 
 PAUSE_NUM_BUTTONS = 2
 PAUSE_CONTINUE = 0
 PAUSE_EXIT = 1
+
+BUTTON_WIDTH = 128
+BUTTON_HEIGHT = 32
 
 pygame.font.init()
 scorefont = pygame.font.Font("vgasys.fon", 64)
@@ -44,8 +47,68 @@ button_exit_rect = images.button_exit.get_rect()
 button_exit_rect.x = size[0]/2 + 16
 button_exit_rect.y = button_continue_rect.y
 
-
-  
+class gui_button():
+    def __init__(img, func):
+        self.rect = img.get_rect()
+        self.func = func
+class gui_window():
+    def __init__(defx=0, defy=0, defw=size[0], defh=size[1]):
+        self.x = defx
+        self.y = defy
+        self.w = defw
+        self.h = defh
+        
+        self.opt_selected = (0, 0)
+        self.opt_cols = []
+        
+        self.place_buttons()
+    
+    def handle(key):
+        newc = self.opt_selected[0]
+        newr = self.opt_selected[1]
+        if key == pygame.K_LEFT:
+            lencol = len(self.cols)
+            newc = (self.opt_selected[0] - 1) % lencol
+            self.opt_selected = (newc, newr)
+        elif key == pygame.K_RIGHT:
+            lencol = len(self.cols)
+            newc = (self.opt_selected[0] + 1) % lencol
+            self.opt_selected = (newc, newr)
+        elif key == pygame.K_DOWN:
+            lenrow = len(self.cols[self.opt_selected[0]])
+            newr = (self.opt_selected[1] + 1) % lenrow
+            self.opt_selected = (newc, newr)
+        elif key == pygame.K_UP:
+            lenrow = len(self.cols[self.opt_selected[0]])
+            newr = (self.opt_selected[1] - 1) % lenrow
+            self.opt_selected = (newc, newr)
+        
+        # if ENTER is pressed:
+        elif key == pygame.K_RETURN:
+            # set dict entry to True based on selected option
+            if pause_selected == PAUSE_CONTINUE:
+                r['pause'] = True
+            elif pause_selected == PAUSE_EXIT:
+                r['done'] = True
+    def draw():
+        for optrow in self.opt_cols
+            for opt in optrow:
+                pass
+    
+    def place_buttons():
+        """ figures out on what coordinates to put the various buttons in the
+        rows and cols list. """
+        mid = self.x + (self.w / 2.0)
+        maxleft = (len(self.opt_cols) * BUTTON_WIDTH +\ 
+            (len(self.opt_cols) - 1) * 16)/2.0
+        maxtop = self.y + 16
+        for c in len(self.opt_cols):
+            for r in len(self.opt_cols[c]):
+                self.opt_cols[c][r].rect.x = maxleft + c * BUTTON_WIDTH
+                self.opt_cols[c][r].rect.y = maxtop + r * BUTTON_HEIGHT
+   
+                
+        
 def handle_pausemenu(key, pause_selected):
     """ handle_pausemenu() is called from the main loop when pause == True.
     handles the pausemenu by looking at user input. returns a dict with content
