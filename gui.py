@@ -127,39 +127,39 @@ class gui_window():
                 thisrect.y = maxtop + r * (BUTTON_HEIGHT + BUTTON_OFFSET_Y)
 
 
-def draw_hpbar(player, difficulty):
+def draw_hpbar():
     """ Draws the HP bar at the bottom of the gamescreen using the global
     variables set at initialization """
     
     # Where the red bar starts
-    hpbarlim = hpbarlen * (player.HP / 100.0) + 1
+    hpbarlim = hpbarlen * (g.player.HP / 100.0) + 1
     # Length of the red bar
-    hpbarlim2 = hpbarlen * ((100 - player.HP) / 100.0)
+    hpbarlim2 = hpbarlen * ((100 - g.player.HP) / 100.0)
 
-    if player.HP > 0.0:
+    if g.player.HP > 0.0:
         pygame.draw.rect(screen, GREEN, [hpbarxmin, hpbarymin, hpbarlim, 30])
 
-    if player.HP < 100.0:
+    if g.player.HP < 100.0:
         pygame.draw.rect(
             screen, RED, [hpbarlim + hpbarxmin, hpbarymin, hpbarlim2, 30])
 			
-def drawgui(player, difficulty):
+def drawgui():
     """ Called at the main loop. Draws everything GUI related."""
     
     # draw score number display
-    scoretxt = scorefont.render("Score: " + str(player.score), False, WHITE)
+    scoretxt = scorefont.render("Score: " + str(g.player.score), False, WHITE)
     screen.blit(scoretxt, (scorex, scorey))
 
     # draw HP number display
-    hptxt = scorefont.render("HP: " + str(player.HP) + "/ 100", False, WHITE)
+    hptxt = scorefont.render("HP: " + str(g.player.HP) + "/ 100", False, WHITE)
     screen.blit(hptxt, (hpx, hpy))
 
     # draw difficulty number display
-    difftext = scorefont.render("Difficulty: " + str(difficulty), False, WHITE)
+    difftext = scorefont.render("Difficulty: " + str(g.difficulty), False, WHITE)
     screen.blit(difftext, (diffx, diffy))
 	
     # draw HPbar
-    draw_hpbar(player, difficulty)
+    draw_hpbar()
     
     # draw the pause menu window if the game is paused
     if g.paused:

@@ -36,9 +36,6 @@ size = (int(600 * SIZE_SCALE), int(920 * SIZE_SCALE))
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Cloc's Spacex")
 
-# Loop until the user clicks the close button.
-inmenu = False
-
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
 
@@ -47,61 +44,40 @@ pygame.key.set_repeat(1, 10)
 
 pygame.mouse.set_visible(False)
 
-# original gamestate:
-playerGroup = pygame.sprite.Group()
-pickups = pygame.sprite.Group()
-fProj = pygame.sprite.Group()
-eProj = pygame.sprite.Group()
-enemies = pygame.sprite.Group()
 
-player = entity.player(size)
-player.add(playerGroup)
 
-time = 0
-difficulty = 1.4
-diffcount = 1
-
-pause_selected = 0
-mainmenu_selected = 0
-
+def game_reset():
+    g.playerGroup.empty()
+    g.pickups.empty()
+    g.fProj.empty()
+    g.eProj.empty()
+    g.enemies.empty()
+    
+    g.player = entity.player(size)
+    g.player.add(g.playerGroup)
+    
+    g.time = 0
+    g.difficulty = 1.0
+    g.diffcount = 1
+    
 def drawEntities():
     # draw player
-    playerGroup.draw(screen)
+    g.playerGroup.draw(screen)
 
     # draw enemies
-    enemies.draw(screen)
+    g.enemies.draw(screen)
 
     # draw projectiles
-    fProj.draw(screen)
-    eProj.draw(screen)
+    g.fProj.draw(screen)
+    g.eProj.draw(screen)
 
-    pickups.draw(screen)
+    g.pickups.draw(screen)
 
-    if player.scopeTime > 0 and player.alive:
-        start_pos = (player.rect[0] + entity.PSIZE, player.rect[1])
-        end_pos = (player.rect[0] + entity.PSIZE, 0)
+    # draw the blue laserpointer if the player picked up a scope pickup
+    if g.player.scopeTime > 0 and g.player.alive:
+        start_pos = (g.player.rect[0] + entity.PSIZE, g.player.rect[1])
+        end_pos = (g.player.rect[0] + entity.PSIZE, 0)
         pygame.draw.line(screen, CYAN, start_pos, end_pos, 1)
-
-
-def drawgui():
-    scoretxt = scorefont.render("Score: " + str(player.score), False, WHITE)
-    screen.blit(scoretxt, (scorex, scorey))
-
-    hptxt = scorefont.render("HP: " + str(player.HP) + "/ 100", False, WHITE)
-    screen.blit(hptxt, (hpx, hpy))
-
-    difftext = scorefont.render("Difficulty: " + str(difficulty), False, WHITE)
-    screen.blit(difftext, (diffx, diffy))
-
-    hpbarlim = hpbarlen * (player.HP / 100.0) + 1
-    hpbarlim2 = hpbarlen * ((100 - player.HP) / 100.0)
-
-    if player.HP > 0.0:
-        pygame.draw.rect(screen, GREEN, [hpbarxmin, hpbarymin, hpbarlim, 30])
-
-    if player.HP < 100.0:
-        pygame.draw.rect(
-            screen, RED, [hpbarlim + hpbarxmin, hpbarymin, hpbarlim2, 30])
 
 
 def spawnEnemy(type, x):
@@ -115,7 +91,7 @@ def spawnEnemy(type, x):
     elif type == events.EVENT_SENTRY:
         enemy = entity.sentry(size, x, 0)
 
-    enemy.add(enemies)
+    enemy.add(g.enemies)
 
 
 def spawnBuff(type, x):
@@ -126,12 +102,12 @@ def spawnBuff(type, x):
         buff = entity.scope(size, x, 0)
     elif type == events.EVENT_AS:
         buff = entity.AS(size, x, 0)
-    buff.add(pickups)
+    buff.add(g.pickups)
 
 
 def handleEvents():
     # add events to the event queues
-    events.addEvents(size, difficulty)
+    events.addEvents(size)
 
     # check the enemy event queues for tasks and execute them
     for eventType in events.enemySpawn:
@@ -161,7 +137,7 @@ def handleEvents():
 def checkCollisions():
     playerhit = False
     # check for collisions between friendly projectiles and enemies
-    coldict = pygame.sprite.groupcollide(enemies, fProj, False, True)
+    coldict = pygame.sprite.groupcollide(g.enemies, g.fProj, False, True)
 
     # keys: enemies hit, values: lists of intersecting projectiles
     if coldict != {}:
@@ -176,46 +152,46 @@ def checkCollisions():
                 if enemyHit.HP <= 0.0:
                     sounds.hitMarker.play(sounds.killEnemySound)
                     enemyHit.kill()
-                    player.score += enemyHit.points
+                    g.player.score += enemyHit.points
 
     # check enemy projectile collisions with player
-    coldict = pygame.sprite.groupcollide(playerGroup, eProj, False, True)
+    coldict = pygame.sprite.groupcollide(g.playerGroup, g.eProj, False, True)
     if coldict != {}:
         sounds.playerHit.play(sounds.hitPlayerSound)
-        for projs in coldict[player]:
-            player.HP -= projs.DMG
+        for projs in coldict[g.player]:
+            g.player.HP -= projs.DMG
             playerhit = True
 
     # check enemy entity collisions with player
-    coldict = pygame.sprite.groupcollide(playerGroup, enemies, False, True)
+    coldict = pygame.sprite.groupcollide(g.playerGroup, g.enemies, False, True)
     if coldict != {}:
         sounds.hitMarker.play(sounds.hitEnemySound)
-        for enemy in coldict[player]:
-            player.HP -= 10
+        for enemy in coldict[g.player]:
+            g.player.HP -= 10
             playerhit = True
 
     # check pickup collisions with player
-    coldict = pygame.sprite.groupcollide(playerGroup, pickups, False, True)
+    coldict = pygame.sprite.groupcollide(g.playerGroup, g.pickups, False, True)
     if coldict != {}:
         sounds.pickups.play(sounds.pickupBuff)
-        for buff in coldict[player]:
+        for buff in coldict[g.player]:
             if isinstance(buff, entity.hpup):
-                player.HP += buff.HP
-                if player.HP > 100:
-                    player.HP = 100
+                g.player.HP += buff.HP
+                if g.player.HP > 100:
+                    g.player.HP = 100
 
             if isinstance(buff, entity.scope):
-                player.scopeTime = buff.time
+                g.player.scopeTime = buff.time
 
             if isinstance(buff, entity.AS):
-                player.ASTime = buff.time
-                player.gunCD = 5.0
+                g.player.ASTime = buff.time
+                g.player.gunCD = 5.0
 
     # if the player got a killing blow, play a sound and off the player
-    if player.HP <= 0.0 and playerhit == True:
+    if g.player.HP <= 0.0 and playerhit == True:
         sounds.hitMarker.play(sounds.killEnemySound)
-        player.alive = False
-        player.kill()
+        g.player.alive = False
+        g.player.kill()
 
 
 def updatePlayer(keys):
@@ -226,26 +202,26 @@ def updatePlayer(keys):
 
     # move player based on keys
     if left and not right:
-        player.move(entity.PDIRL, size)
+        g.player.move(entity.PDIRL, size)
     elif right and not left:
-        player.move(entity.PDIRR, size)
+        g.player.move(entity.PDIRR, size)
     if not left and not right:
-        player.move(entity.PDIRN, size)
+        g.player.move(entity.PDIRN, size)
 
     # fire projectiles based on key
-    if fire and player.gunTime == 0:
+    if fire and g.player.gunTime == 0:
         sounds.fireChannel.play(sounds.playerFireSound)
-        entity.projectile(player).add(fProj)
-        player.gunTime = player.gunCD
+        entity.projectile(g.player).add(g.fProj)
+        g.player.gunTime = g.player.gunCD
 
     # check AS buff
-    if player.ASTime == 0:
-        player.gunCD = 10
-    player.updateTimers()
+    if g.player.ASTime == 0:
+        g.player.gunCD = 10
+    g.player.updateTimers()
 
 
 def updateEnemies():
-    for enm in enemies:
+    for enm in g.enemies:
         enm.move()
 
         isGrunt = isinstance(enm, entity.grunt)
@@ -257,15 +233,15 @@ def updateEnemies():
             enm.gunTime -= 1
             if enm.gunTime <= 0:
                 sounds.fireChannel.play(sounds.playerFireSound)
-                entity.projectile(enm).add(eProj)
+                entity.projectile(enm).add(g.eProj)
                 enm.gunTime = enm.gunCD
 
         if isSentry:
-            enm.detFacing(player)
+            enm.detFacing(g.player)
 
 
 def updatePickups():
-    for pickup in pickups:
+    for pickup in g.pickups:
         pickup.move()
 
         if pickup.rect[1] > size[1]:
@@ -274,20 +250,20 @@ def updatePickups():
 
 def updateProjectiles():
     # move projectiles
-    for projectile in fProj.sprites():
+    for projectile in g.fProj.sprites():
         projectile.moveProjectile()
-    for projectile in eProj.sprites():
+    for projectile in g.eProj.sprites():
         projectile.moveProjectile()
 
     # check if friendly projectiles are out of bounds
-    for projectile in fProj.sprites():
+    for projectile in g.fProj.sprites():
         x = projectile.rect[0]
         y = projectile.rect[1]
         if ((x < 0 or x > size[0]) or (y < 0 or y > size[1])):
             projectile.kill()
 
     # check if enemy projectiles are out of bounds
-    for projectile in eProj.sprites():
+    for projectile in g.eProj.sprites():
         x = projectile.rect[0]
         y = projectile.rect[1]
         if ((x < 0 or x > size[0]) or (y < 0 or y > size[1])):
@@ -296,6 +272,8 @@ def updateProjectiles():
 
 # -------- Main Program Loop -----------
 if __name__ == '__main__':
+    game_reset()
+    
     while not g.done:
 
         # general input:
@@ -314,7 +292,7 @@ if __name__ == '__main__':
         # in-game
         if g.paused != True:
             # --- Game logic should go here
-            if player.alive:
+            if g.player.alive:
                 updatePlayer(keys)
             updateEnemies()
             updatePickups()
@@ -323,12 +301,12 @@ if __name__ == '__main__':
             checkCollisions()
 
 			# tick every 16 frames
-            if time % 16 == 0:
+            if g.time % 16 == 0:
                 handleEvents()
 
-            if (player.score / 500.0) >= diffcount:
-                diffcount += 1
-                difficulty *= 1.4
+            if (g.player.score / 250.0) >= g.diffcount:
+                g.diffcount += 1
+                g.difficulty += 0.10
 
             # --- Drawing code should go here
             screen.fill(131094)
@@ -344,11 +322,11 @@ if __name__ == '__main__':
 
         """ === end else ========================================================== """
         
-        gui.drawgui(player, difficulty)
+        gui.drawgui()
         # flip screen
         pygame.display.flip()
 
-        time += 1
+        g.time += 1
         clock.tick(FPS)
 
     # Close the window and quit.

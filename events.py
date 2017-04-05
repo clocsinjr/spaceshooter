@@ -2,7 +2,7 @@ import random
 import pygame
 
 import entity
-
+import global_vars as g
 EVENT_NONE = 0
 EVENT_FODDER = 1
 EVENT_SINE = 2
@@ -17,10 +17,10 @@ enemySpawn = {EVENT_FODDER: [], EVENT_SINE: [],
               EVENT_GRUNT: [], EVENT_SENTRY: []}
 buffSpawn = {EVENT_HPUP: [], EVENT_SCOPE: [], EVENT_AS: []}
 
-twentieth = (1.0 / 200.0)
-fiftheenth = (1.0 / 150.0)
-twelveth = (1.0 / 120.0)
-tenth = (1.0 / 100.0)
+twohundred = (1.0 / 200.0)
+hundredfifty = (1.0 / 150.0)
+hundredtwenty = (1.0 / 120.0)
+hundred = (1.0 / 100.0)
 
 
 def addEventFodder(size):
@@ -88,11 +88,11 @@ def addEventAS(size):
     buffSpawn[EVENT_AS].append([x])
 
 
-def addEvents(size, difficulty):
+def addEvents(size):
 
     # add enemy events
-    if random.random() < fiftheenth * difficulty:
-        type = random.randint(11, 15)
+    if random.random() < hundredtwenty * g.difficulty:
+        type = random.randint(1, 15)
         if len(enemySpawn[EVENT_SINE]) == 0 and type <= 6:
             addEventSinewave(size)
         elif len(enemySpawn[EVENT_GRUNT]) == 0 and type > 6 and type < 11:
@@ -103,9 +103,9 @@ def addEvents(size, difficulty):
     # add randomly placed fodders and grunts
     timesFodder = timesGrunt = 0
     for i in range(16):
-        if random.random() < twelveth * difficulty:
+        if random.random() < hundredfifty * g.difficulty:
             timesFodder += 1
-        if random.random() < twentieth * difficulty:
+        if random.random() < twohundred * g.difficulty:
             timesGrunt += 1
     for j in range(0, timesFodder):
         addEventFodder(size)
@@ -113,13 +113,13 @@ def addEvents(size, difficulty):
         addEventGrunt(size)
 
     # add randomly placed sentries
-    if random.random() < fiftheenth * difficulty:
+    if random.random() < hundredfifty * g.difficulty:
         addEventSentry(size)
 
     # add randomly placed scopes, ASes and HPups
-    if random.random() < fiftheenth:
+    if random.random() < hundredfifty:
         addEventScope(size)
-    if random.random() < fiftheenth:
+    if random.random() < hundredfifty:
         addEventAS(size)
-    if random.random() < fiftheenth * difficulty:
+    if random.random() < hundredfifty * g.difficulty:
         addEventHPup(size)
