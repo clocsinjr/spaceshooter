@@ -3,6 +3,7 @@ import pygame
 pygame.mixer.pre_init(44100, -16, 1, 4096)
 pygame.mixer.init()
 
+
 src = "audio/"
 timeandspace = src + "bgmusic1.mp3" 
 onemoreshot = src + "bgmusic2.wav"

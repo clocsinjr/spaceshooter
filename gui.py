@@ -165,4 +165,4 @@ def drawgui(player, difficulty):
     if g.paused:
         pausemenu.draw()
 
-pausemenu = gui_window([[buttons.button_continue], [buttons.button_exit]])
+pausemenu = gui_window([[buttons.button_continue, buttons.button_toggle_music], [buttons.button_exit]])
