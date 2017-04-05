@@ -14,12 +14,14 @@ import random
 import time as pytime
 import pygame
 
+import global_vars as g
 import entity
 import images
 import sounds
 import events
 import gui
 
+SIZE_SCALE = 0.8
 # Define some colors
 FPS = 60
 BLACK = (0, 0, 0)
@@ -30,13 +32,11 @@ CYAN = 52223
 pygame.init()
 
 # Set the width and height of the screen [width, height]
-size = (int(600 * 1.0), int(920 * 1.0))
+size = (int(600 * SIZE_SCALE), int(920 * SIZE_SCALE))
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Cloc's Spacex")
 
 # Loop until the user clicks the close button.
-done = False
-paused = False
 inmenu = False
 
 # Used to manage how fast the screen updates
@@ -296,7 +296,7 @@ def updateProjectiles():
 
 # -------- Main Program Loop -----------
 if __name__ == '__main__':
-    while not done:
+    while not g.done:
 
         # general input:
         keys = pygame.key.get_pressed()
@@ -310,11 +310,9 @@ if __name__ == '__main__':
                 menu_key = event.key
                 if event.key == pygame.K_ESCAPE:
                     pygame.event.clear(pygame.KEYUP)
-                    if not paused:
-                        pause_selected = 0
-                    paused = not paused
+                    g.paused = not g.paused
         # in-game
-        if paused != True:
+        if g.paused != True:
             # --- Game logic should go here
             if player.alive:
                 updatePlayer(keys)
@@ -342,18 +340,11 @@ if __name__ == '__main__':
 
         # when paused:
         else:
-            r_pause = gui.handle_pausemenu(menu_key, pause_selected)
-            
-            if r_pause['selected'] != None:
-                pause_selected = r_pause['selected']
-            elif r_pause['done'] != None:
-                done = True
-            elif  r_pause['pause'] != None:
-                paused = not paused
+            gui.pausemenu.handle(menu_key)
 
         """ === end else ========================================================== """
         
-        gui.drawgui(paused, pause_selected, player, difficulty)
+        gui.drawgui(player, difficulty)
         # flip screen
         pygame.display.flip()
 

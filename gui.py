@@ -1,7 +1,11 @@
 import pygame
 import images
-from clocspaceshooter import size, screen, done, paused
+import buttons
+
+from clocspaceshooter import size, screen
 from clocspaceshooter import WHITE, RED, GREEN, BLACK
+
+import global_vars as g
 
 PAUSE_NUM_BUTTONS = 2
 PAUSE_CONTINUE = 0
@@ -9,6 +13,8 @@ PAUSE_EXIT = 1
 
 BUTTON_WIDTH = 128
 BUTTON_HEIGHT = 32
+BUTTON_OFFSET_X = 16
+BUTTON_OFFSET_Y = 16
 
 pygame.font.init()
 scorefont = pygame.font.Font("vgasys.fon", 64)
@@ -47,112 +53,80 @@ button_exit_rect = images.button_exit.get_rect()
 button_exit_rect.x = size[0]/2 + 16
 button_exit_rect.y = button_continue_rect.y
 
-class gui_button():
-    def __init__(img, func):
-        self.rect = img.get_rect()
-        self.func = func
 class gui_window():
-    def __init__(defx=0, defy=0, defw=size[0], defh=size[1]):
-        self.x = defx
-        self.y = defy
-        self.w = defw
-        self.h = defh
+    def __init__(self, buttons, defpos=None):
+        self.x = 0
+        self.y = 0
+        self.w = 0
+        self.h = 0
         
         self.opt_selected = (0, 0)
-        self.opt_cols = []
+        self.opt_cols = buttons
         
-        self.place_buttons()
+        self.place_buttons(defpos)
     
-    def handle(key):
+    def handle(self, key):
         newc = self.opt_selected[0]
         newr = self.opt_selected[1]
         if key == pygame.K_LEFT:
-            lencol = len(self.cols)
+            lencol = len(self.opt_cols)
             newc = (self.opt_selected[0] - 1) % lencol
             self.opt_selected = (newc, newr)
         elif key == pygame.K_RIGHT:
-            lencol = len(self.cols)
+            lencol = len(self.opt_cols)
             newc = (self.opt_selected[0] + 1) % lencol
             self.opt_selected = (newc, newr)
         elif key == pygame.K_DOWN:
-            lenrow = len(self.cols[self.opt_selected[0]])
+            lenrow = len(self.opt_cols[self.opt_selected[0]])
             newr = (self.opt_selected[1] + 1) % lenrow
             self.opt_selected = (newc, newr)
         elif key == pygame.K_UP:
-            lenrow = len(self.cols[self.opt_selected[0]])
+            lenrow = len(self.opt_cols[self.opt_selected[0]])
             newr = (self.opt_selected[1] - 1) % lenrow
             self.opt_selected = (newc, newr)
         
         # if ENTER is pressed:
         elif key == pygame.K_RETURN:
-            # set dict entry to True based on selected option
-            if pause_selected == PAUSE_CONTINUE:
-                r['pause'] = True
-            elif pause_selected == PAUSE_EXIT:
-                r['done'] = True
-    def draw():
-        for optrow in self.opt_cols
-            for opt in optrow:
-                pass
+            c, r = self.opt_selected
+            self.opt_cols[c][r].func()
+    def draw(self):
+        bgrect = pygame.Rect(self.x, self.y, self.w, self.h)
+        pygame.draw.rect(screen, BLACK, bgrect)
+        pygame.draw.rect(screen, WHITE, bgrect, 2)
+        for c in range(len(self.opt_cols)):
+            for r in range(len(self.opt_cols[c])):
+                opt = self.opt_cols[c][r]
+                if (c, r) == self.opt_selected:
+                    screen.blit(opt.sel_img, opt.rect)
+                else:
+                    screen.blit(opt.img, opt.rect)
     
-    def place_buttons():
+    def place_buttons(self, defpos):
         """ figures out on what coordinates to put the various buttons in the
         rows and cols list. """
+        
+        ncols = len(self.opt_cols)
+        nrows = max([len(self.opt_cols[i]) for i in range(ncols)])
+        
+        self.w = BUTTON_OFFSET_X * (ncols + 1) + BUTTON_WIDTH * ncols
+        self.h = BUTTON_OFFSET_Y * (nrows + 1) + BUTTON_HEIGHT * nrows
+        
+        if defpos:
+            self.x, self.y = defpos
+        else:
+            self.x = (size[0] - self.w)/2
+            self.y = (size[1] - self.h)/2 
+            
         mid = self.x + (self.w / 2.0)
-        maxleft = (len(self.opt_cols) * BUTTON_WIDTH +\ 
-            (len(self.opt_cols) - 1) * 16)/2.0
-        maxtop = self.y + 16
-        for c in len(self.opt_cols):
-            for r in len(self.opt_cols[c]):
-                self.opt_cols[c][r].rect.x = maxleft + c * BUTTON_WIDTH
-                self.opt_cols[c][r].rect.y = maxtop + r * BUTTON_HEIGHT
-   
-                
-        
-def handle_pausemenu(key, pause_selected):
-    """ handle_pausemenu() is called from the main loop when pause == True.
-    handles the pausemenu by looking at user input. returns a dict with content
-    depending on what key is pressed. """
-    
-    # initialize response dict
-    r = {'selected': None, 'done': None, 'pause': None}
-    
-    # return the new selection if a direction key is pressed.
-    if key == pygame.K_LEFT:
-        r['selected'] = PAUSE_CONTINUE
-    elif key == pygame.K_RIGHT:
-        r['selected'] = PAUSE_EXIT
-    
-    # if ENTER is pressed:
-    elif key == pygame.K_RETURN:
-        # set dict entry to True based on selected option
-        if pause_selected == PAUSE_CONTINUE:
-            r['pause'] = True
-        elif pause_selected == PAUSE_EXIT:
-            r['done'] = True
-    
-    # return response
-    return r
-        
-def draw_pausescreen(pause_selected):
-    """ Draws the pause menu window"""
-    
-    # draw pause menu background
-    pygame.draw.rect(
-        screen, BLACK, [pauseblockx1, pauseblocky1, pauseblockw, pauseblockh])
-    
-    # draw continue button
-    if pause_selected == PAUSE_CONTINUE:
-        screen.blit(images.button_continue_sel, button_continue_rect)
-    else:
-        screen.blit(images.button_continue, button_continue_rect)
+        maxleft = self.x + BUTTON_OFFSET_X
+        maxtop = self.y + BUTTON_OFFSET_Y
+        for c in range(len(self.opt_cols)):
+            for r in range(len(self.opt_cols[c])):
+                thisrect = self.opt_cols[c][r].rect
+                thisrect.x = maxleft + c * (BUTTON_WIDTH + BUTTON_OFFSET_X)
+                thisrect.y = maxtop + r * (BUTTON_HEIGHT + BUTTON_OFFSET_Y)
 
-    # draw exit button
-    if pause_selected == PAUSE_EXIT:
-        screen.blit(images.button_exit_sel, button_exit_rect)
-    else:
-        screen.blit(images.button_exit, button_exit_rect)
-    
+
 def draw_hpbar(player, difficulty):
     """ Draws the HP bar at the bottom of the gamescreen using the global
     variables set at initialization """
@@ -169,7 +143,7 @@ def draw_hpbar(player, difficulty):
         pygame.draw.rect(
             screen, RED, [hpbarlim + hpbarxmin, hpbarymin, hpbarlim2, 30])
 			
-def drawgui(paused, pause_selected, player, difficulty):
+def drawgui(player, difficulty):
     """ Called at the main loop. Draws everything GUI related."""
     
     # draw score number display
@@ -188,6 +162,7 @@ def drawgui(paused, pause_selected, player, difficulty):
     draw_hpbar(player, difficulty)
     
     # draw the pause menu window if the game is paused
-    if paused:
-        draw_pausescreen(pause_selected)
-    
+    if g.paused:
+        pausemenu.draw()
+
+pausemenu = gui_window([[buttons.button_continue], [buttons.button_exit]])
