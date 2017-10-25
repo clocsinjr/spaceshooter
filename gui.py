@@ -142,7 +142,14 @@ def draw_hpbar():
     if g.player.HP < 100.0:
         pygame.draw.rect(
             screen, RED, [hpbarlim + hpbarxmin, hpbarymin, hpbarlim2, 30])
-			
+
+def draw_crosshair():
+    dmx, dmy = pygame.mouse.get_pos()
+    pygame.draw.rect(screen, WHITE, [dmx - 10, dmy - 1, 7, 3])
+    pygame.draw.rect(screen, WHITE, [dmx + 4, dmy - 1, 7, 3])
+    pygame.draw.rect(screen, WHITE, [dmx - 1, dmy - 10, 3, 7])
+    pygame.draw.rect(screen, WHITE, [dmx - 1, dmy + 4, 3, 7])
+    
 def drawgui():
     """ Called at the main loop. Draws everything GUI related."""
     
@@ -164,5 +171,8 @@ def drawgui():
     # draw the pause menu window if the game is paused
     if g.paused:
         pausemenu.draw()
+    else:
+        # draw crosshair
+        draw_crosshair()
 
 pausemenu = gui_window([[buttons.button_continue, buttons.button_toggle_music], [buttons.button_exit]])

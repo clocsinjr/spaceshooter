@@ -75,8 +75,9 @@ def drawEntities():
 
     # draw the blue laserpointer if the player picked up a scope pickup
     if g.player.scopeTime > 0 and g.player.alive:
-        start_pos = (g.player.rect[0] + entity.PSIZE, g.player.rect[1])
-        end_pos = (g.player.rect[0] + entity.PSIZE, 0)
+        start_pos = (g.player.rect[0] + entity.PSIZE, g.player.rect[1] + entity.PSIZE)
+        xp, yp = pygame.mouse.get_pos()
+        end_pos = ((xp - start_pos[0]) * 100), ((yp - start_pos[1]) * 100)
         pygame.draw.line(screen, CYAN, start_pos, end_pos, 1)
 
 
@@ -182,10 +183,12 @@ def checkCollisions():
 
             if isinstance(buff, entity.scope):
                 g.player.scopeTime = buff.time
-
+                g.player.accuracy = 0
+            
             if isinstance(buff, entity.AS):
                 g.player.ASTime = buff.time
                 g.player.gunCD = 5.0
+            
 
     # if the player got a killing blow, play a sound and off the player
     if g.player.HP <= 0.0 and playerhit == True:
@@ -198,8 +201,9 @@ def updatePlayer(keys):
     # check pressed keys
     left = keys[pygame.K_LEFT]
     right = keys[pygame.K_RIGHT]
-    fire = keys[pygame.K_SPACE]
-
+    #fire = keys[pygame.K_SPACE]
+    fire = pygame.mouse.get_pressed()[0]
+    
     # move player based on keys
     if left and not right:
         g.player.move(entity.PDIRL, size)
@@ -210,13 +214,17 @@ def updatePlayer(keys):
 
     # fire projectiles based on key
     if fire and g.player.gunTime == 0:
+        mpos = pygame.mouse.get_pos()
+        g.player.detFacing(mpos)
         sounds.fireChannel.play(sounds.playerFireSound)
         entity.projectile(g.player).add(g.fProj)
         g.player.gunTime = g.player.gunCD
 
-    # check AS buff
+    # check if buff timers run out
     if g.player.ASTime == 0:
         g.player.gunCD = 10
+    if g.player.scopeTime == 0:
+        g.player.accuracy = 0.05
     g.player.updateTimers()
 
 
